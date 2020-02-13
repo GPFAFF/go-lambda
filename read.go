@@ -3,14 +3,14 @@ package read
 import (
 	"bufio"
 	"encoding/csv"
-	"github.com/GPFAFF/go-lambda/report"
+	report "github.com/GPFAFF/go-lambda/report"
 	"io"
 	"log"
 	"os"
 )
 
 // File reads the proper csv
-func ReadFile(name string) {
+func File(name string) {
 
 	csvFile, err := os.Open(name)
 	if err != nil {
@@ -38,6 +38,6 @@ func ReadFile(name string) {
 			log.Fatalf("Cannot read '%s': %s\n", line, err.Error())
 		}
 
-		BuildReport(name, line)
+		report.Build(name, line)
 	}
 }

@@ -20,8 +20,8 @@ type ProgramDetails struct {
 	PayoffProcessingDate string `json:",omitempty"`
 }
 
-// BuildReport creates the report for exporting.
-func BuildReport(name string, line []string) {
+// Build creates the report for exporting.
+func Build(name string, line []string) {
 	var vehicle []Utilization
 
 	if strings.Contains(name, "active") {
