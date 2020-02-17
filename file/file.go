@@ -6,12 +6,37 @@ import (
 	"os"
 )
 
+type VehicleData struct {
+	VIN          string
+	OrigDealerID string
+	ProgramCode  string
+	Date         string
+	Status       string
+}
+
 type VehicleReport struct {
-	VIN          string `json:"VIN"`
-	OrigDealerID string `json:"OrigDealerID"`
-	ProgramCode  string `json:"ProgramCode"`
-	Date         string `json:"Date"`
-	Status       string `json:"Status"`
+	Vehicles []VehicleData
+}
+
+func (vehicle *VehicleReport) AddItem(car VehicleData) {
+	vehicle.Vehicles = append(vehicle.Vehicles, car)
+	fmt.Println("vee", vehicle.Vehicles)
+}
+
+func createTerminatedVehicleReport(line []string) []VehicleReport {
+
+	currentVehicle := VehicleData{
+		VIN:          line[1],
+		OrigDealerID: line[2],
+		ProgramCode:  line[5],
+		Status:       "Terminated",
+		Date:         line[9],
+	}
+
+	car := VehicleReport{}
+	car.AddItem(currentVehicle)
+	fmt.Println(car)
+	return []VehicleReport{}
 }
 
 func BuildReport(filename string) {
@@ -21,15 +46,17 @@ func BuildReport(filename string) {
 		panic(err)
 	}
 
-	for _, line := range lines {
-		data := VehicleReport{
-			VIN:          line[0],
-			OrigDealerID: line[1],
-			ProgramCode:  line[2],
-			Status:       "Active",
-			Date:         line[3],
+	for index, line := range lines {
+		if index == 0 {
+			// skip header line
+			continue
 		}
-		fmt.Println(data)
+
+		// if strings.Contains(filename, "active") {
+		// 	append(vehicleReport, createActiveVehicleReport(line))
+		// } else {
+		createTerminatedVehicleReport(line)
+		// }
 	}
 }
 
@@ -55,8 +82,6 @@ func ReadCsv(filename string) ([][]string, error) {
 	}
 
 	reader.Comma = '|'
-
-	reader.FieldsPerRecord = -1
 
 	csvData, err := reader.ReadAll()
 
