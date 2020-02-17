@@ -1,8 +1,14 @@
 package main
 
-import read "github.com/GPFAFF/go-lambda/read"
+import (
+	read "github.com/GPFAFF/go-lambda/read"
+	send "github.com/GPFAFF/go-lambda/sqs/send"
+)
 
 func main() {
-	read.File("one_active.csv")
-	read.File("two.csv")
+	// v := read.File("one_active.csv")
+	x := read.File("two.csv")
+
+	send.Message(x)
+
 }
