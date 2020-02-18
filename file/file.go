@@ -2,11 +2,19 @@ package file
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
+// VehicleReport is a collection of VehicleData.
 type VehicleReport struct {
+	VehicleData []VehicleData
+}
+
+// VehicleData is a single car report entity.
+type VehicleData struct {
 	VIN          string `json:"VIN"`
 	OrigDealerID string `json:"OrigDealerID"`
 	ProgramCode  string `json:"ProgramCode"`
@@ -14,23 +22,63 @@ type VehicleReport struct {
 	Status       string `json:"Status"`
 }
 
-func BuildReport(filename string) {
+func (v *VehicleReport) addVehicle(item VehicleData) []VehicleData {
+	v.VehicleData = append(v.VehicleData, item)
+	return v.VehicleData
+}
+
+func createTerminatedVehicleReport(line []string) VehicleData {
+	currentVehicle := VehicleData{
+		VIN:          line[1],
+		OrigDealerID: line[2],
+		ProgramCode:  line[5],
+		Status:       "Terminated",
+		Date:         line[9],
+	}
+	return currentVehicle
+}
+
+func createActiveVehicleReport(line []string) VehicleData {
+	currentVehicle := VehicleData{
+		VIN:          line[1],
+		OrigDealerID: line[2],
+		ProgramCode:  line[8],
+		Status:       "Active",
+		Date:         line[9],
+	}
+	return currentVehicle
+}
+
+// BuildReport creates a vehicle data report for Utilization.
+func BuildReport(filename string) VehicleReport {
 	lines, err := ReadCsv(filename)
 
 	if err != nil {
 		panic(err)
 	}
 
-	for _, line := range lines {
-		data := VehicleReport{
-			VIN:          line[0],
-			OrigDealerID: line[1],
-			ProgramCode:  line[2],
-			Status:       "Active",
-			Date:         line[3],
+	vr := VehicleReport{}
+
+	for index, line := range lines {
+
+		if index == 0 {
+			// skip header line
+			continue
 		}
-		fmt.Println(data)
+
+		if strings.Contains(filename, "active") {
+			vehicle := createActiveVehicleReport(line)
+			vr.addVehicle(vehicle)
+		} else {
+			vehicle := createTerminatedVehicleReport(line)
+			vr.addVehicle(vehicle)
+		}
 	}
+
+	resp, err := json.Marshal(vr)
+	fmt.Println("VVV", string(resp))
+	fmt.Println("VR", vr)
+	return vr
 }
 
 // ReadCsv accepts a file and returns its content as a multi-dimentional type
@@ -55,8 +103,6 @@ func ReadCsv(filename string) ([][]string, error) {
 	}
 
 	reader.Comma = '|'
-
-	reader.FieldsPerRecord = -1
 
 	csvData, err := reader.ReadAll()
 
