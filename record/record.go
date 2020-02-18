@@ -1,20 +1,15 @@
 package record
 
-// VehicleData is a single car report entity.
+// VehicleData is a single car record.
 type VehicleData struct {
-	VIN          string `json:"VIN"`
-	OrigDealerID string `json:"OrigDealerID"`
-	ProgramCode  string `json:"ProgramCode"`
-	Date         string `json:"Date"`
-	Status       string `json:"Status"`
+	VIN          string
+	OrigDealerID string
+	ProgramCode  string
+	Date         string
+	Status       string
 }
 
-// VehicleReport is a collection of VehicleData.
-type VehicleReport struct {
-	Vehicles []VehicleData
-}
-
-// CreateTerminatedVehicleEntry creates an active vehicle entry.
+// CreateTerminatedVehicleEntry creates a terminated vehicle entry.
 func CreateTerminatedVehicleEntry(line []string) VehicleData {
 	return VehicleData{
 		VIN:          line[1],

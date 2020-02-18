@@ -33,8 +33,7 @@ func BuildReport(filename string) {
 	}
 }
 
-// ReadCsv accepts a file and returns its content as a multi-dimensional type
-// with lines and each column.
+// ReadCsv accepts a file and returns its content as a multi-dimensional type with lines and each column.
 func ReadCsv(filename string) ([][]string, error) {
 
 	// Open CSV file
@@ -54,8 +53,10 @@ func ReadCsv(filename string) ([][]string, error) {
 		os.Exit(1)
 	}
 
+	// Split entries by the delimiter
 	reader.Comma = '|'
 
+	// Read the entire CSV file
 	csvData, err := reader.ReadAll()
 
 	if err != nil {

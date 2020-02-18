@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/GPFAFF/go-lambda/record"
+	"github.com/GPFAFF/go-lambda/sqs/receive"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
@@ -55,4 +56,6 @@ func Message(vehicle record.VehicleData) {
 	}
 
 	fmt.Println("Success", *result)
+
+	defer receive.Message()
 }
