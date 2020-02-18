@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	send "github.com/GPFAFF/go-lambda/sqs/send"
 )
 
 // VehicleData is a single car report entity.
@@ -21,9 +23,13 @@ type VehicleReport struct {
 	Vehicles []VehicleData
 }
 
-func (data *VehicleReport) addVehicle(item VehicleData) []VehicleData {
-	data.Vehicles = append(data.Vehicles, item)
-	return data.Vehicles
+// type VehicleMap struct {
+// 	Vehicles map[string]VehicleData
+// }
+
+func (vr *VehicleReport) addVehicle(item VehicleData) []VehicleData {
+	vr.Vehicles = append(vr.Vehicles, item)
+	return vr.Vehicles
 }
 
 func createTerminatedVehicleReport(line []string) VehicleData {
@@ -56,7 +62,7 @@ func BuildReport(filename string) VehicleReport {
 
 	var vr VehicleReport
 
-	fmt.Printf("%T\n", vr)
+	// Printf("%T\n", vr)
 
 	for _, line := range lines[1:] {
 
@@ -67,12 +73,15 @@ func BuildReport(filename string) VehicleReport {
 		} else {
 			vehicle = createTerminatedVehicleReport(line)
 		}
-		vr.addVehicle(vehicle)
+		// push single entry to sqs
+		send.Message(vehicle)
+		//vr.addVehicle(vehicle)
 	}
 
 	// resp, err := json.Marshal(vr)
 	// fmt.Println("VVV", string(resp))
 	// checking the output
+	fmt.Println(vr)
 	return vr
 }
 

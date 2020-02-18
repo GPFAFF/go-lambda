@@ -3,15 +3,18 @@ package send
 import (
 	"fmt"
 
+	"github.com/GPFAFF/go-lambda/file"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
 // Message sends a simple message to the queue
-func Message(message string) {
+func Message(vehicle file.VehicleData) {
 
-	fmt.Println(message)
+	fmt.Println(vehicle)
+
+	// struct gets passed in.
 	session := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
@@ -23,9 +26,25 @@ func Message(message string) {
 	result, err := service.SendMessage(&sqs.SendMessageInput{
 		DelaySeconds: aws.Int64(10),
 		MessageAttributes: map[string]*sqs.MessageAttributeValue{
-			"UtilizationReport": &sqs.MessageAttributeValue{
+			"VIN": &sqs.MessageAttributeValue{
 				DataType:    aws.String("String"),
-				StringValue: aws.String(message),
+				StringValue: aws.String(vehicle.VIN),
+			},
+			"OrigDealerID": &sqs.MessageAttributeValue{
+				DataType:    aws.String("String"),
+				StringValue: aws.String(vehicle.OrigDealerID),
+			},
+			"ProgramCode": &sqs.MessageAttributeValue{
+				DataType:    aws.String("String"),
+				StringValue: aws.String(vehicle.ProgramCode),
+			},
+			"Date": &sqs.MessageAttributeValue{
+				DataType:    aws.String("String"),
+				StringValue: aws.String(vehicle.Date),
+			},
+			"Status": &sqs.MessageAttributeValue{
+				DataType:    aws.String("String"),
+				StringValue: aws.String(vehicle.Status),
 			},
 		},
 		MessageBody: aws.String("Program Car Utilization"),
