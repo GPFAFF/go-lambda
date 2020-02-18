@@ -1,8 +1,10 @@
 package main
 
-import read "github.com/GPFAFF/go-lambda/read"
+import (
+	file "github.com/GPFAFF/go-lambda/file"
+)
 
 func main() {
-	read.File("one_active.csv")
-	read.File("two.csv")
+	file.BuildReport("./one_active.csv")
+	file.BuildReport("./two.csv")
 }
