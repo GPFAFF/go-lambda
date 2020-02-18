@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	send "github.com/GPFAFF/go-lambda/sqs/send"
+	"github.com/GPFAFF/go-lambda/sqs/send"
 )
 
 // VehicleData is a single car report entity.
@@ -21,15 +21,6 @@ type VehicleData struct {
 // VehicleReport is a collection of VehicleData.
 type VehicleReport struct {
 	Vehicles []VehicleData
-}
-
-// type VehicleMap struct {
-// 	Vehicles map[string]VehicleData
-// }
-
-func (vr *VehicleReport) addVehicle(item VehicleData) []VehicleData {
-	vr.Vehicles = append(vr.Vehicles, item)
-	return vr.Vehicles
 }
 
 func createTerminatedVehicleReport(line []string) VehicleData {
@@ -53,16 +44,12 @@ func createActiveVehicleReport(line []string) VehicleData {
 }
 
 // BuildReport creates a vehicle data report for Utilization.
-func BuildReport(filename string) VehicleReport {
+func BuildReport(filename string) {
 	lines, err := ReadCsv(filename)
 
 	if err != nil {
 		panic(err)
 	}
-
-	var vr VehicleReport
-
-	// Printf("%T\n", vr)
 
 	for _, line := range lines[1:] {
 
@@ -74,15 +61,9 @@ func BuildReport(filename string) VehicleReport {
 			vehicle = createTerminatedVehicleReport(line)
 		}
 		// push single entry to sqs
-		send.Message(vehicle)
-		//vr.addVehicle(vehicle)
-	}
 
-	// resp, err := json.Marshal(vr)
-	// fmt.Println("VVV", string(resp))
-	// checking the output
-	fmt.Println(vr)
-	return vr
+		send.Message(vehicle)
+	}
 }
 
 // ReadCsv accepts a file and returns its content as a multi-dimensional type
