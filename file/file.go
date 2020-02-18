@@ -6,42 +6,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/GPFAFF/go-lambda/record"
 	"github.com/GPFAFF/go-lambda/sqs/send"
 )
-
-// VehicleData is a single car report entity.
-type VehicleData struct {
-	VIN          string `json:"VIN"`
-	OrigDealerID string `json:"OrigDealerID"`
-	ProgramCode  string `json:"ProgramCode"`
-	Date         string `json:"Date"`
-	Status       string `json:"Status"`
-}
-
-// VehicleReport is a collection of VehicleData.
-type VehicleReport struct {
-	Vehicles []VehicleData
-}
-
-func createTerminatedVehicleReport(line []string) VehicleData {
-	return VehicleData{
-		VIN:          line[1],
-		OrigDealerID: line[2],
-		ProgramCode:  line[5],
-		Status:       "Terminated",
-		Date:         line[9],
-	}
-}
-
-func createActiveVehicleReport(line []string) VehicleData {
-	return VehicleData{
-		VIN:          line[1],
-		OrigDealerID: line[2],
-		ProgramCode:  line[8],
-		Status:       "Active",
-		Date:         line[9],
-	}
-}
 
 // BuildReport creates a vehicle data report for Utilization.
 func BuildReport(filename string) {
@@ -53,15 +20,15 @@ func BuildReport(filename string) {
 
 	for _, line := range lines[1:] {
 
-		var vehicle VehicleData
+		var vehicle record.VehicleData
 
 		if strings.Contains(filename, "active") {
-			vehicle = createActiveVehicleReport(line)
+			vehicle = record.CreateActiveVehicleEntry(line)
 		} else {
-			vehicle = createTerminatedVehicleReport(line)
+			vehicle = record.CreateTerminatedVehicleEntry(line)
 		}
-		// push single entry to sqs
 
+		// push single entry to sqs
 		send.Message(vehicle)
 	}
 }

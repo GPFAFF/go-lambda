@@ -3,17 +3,14 @@ package send
 import (
 	"fmt"
 
-	"github.com/GPFAFF/go-lambda/file"
-
+	"github.com/GPFAFF/go-lambda/record"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
 // Message sends a simple message to the queue
-func Message(vehicle file.VehicleData) {
-
-	fmt.Println(vehicle)
+func Message(vehicle record.VehicleData) {
 
 	// struct gets passed in.
 	session := session.Must(session.NewSessionWithOptions(session.Options{
@@ -53,7 +50,7 @@ func Message(vehicle file.VehicleData) {
 	})
 
 	if err != nil {
-		fmt.Println("Errorzzz", err)
+		fmt.Println("Error", err)
 		return
 	}
 
