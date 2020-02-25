@@ -13,17 +13,18 @@ import (
 // Message sends a simple message to the queue
 func Message(vehicle record.VehicleData) {
 
+	fmt.Println("*****", vehicle)
+
 	// struct gets passed in.
 	session := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
-	qURL := "http://localhost:4576/queue/development-queue"
+	qURL := "http://localhost:4576/queue/chrono-queue.fifo"
 
 	service := sqs.New(session, &aws.Config{Endpoint: aws.String("http://localhost:4576")})
 
 	result, err := service.SendMessage(&sqs.SendMessageInput{
-		DelaySeconds: aws.Int64(10),
 		MessageAttributes: map[string]*sqs.MessageAttributeValue{
 			"VIN": &sqs.MessageAttributeValue{
 				DataType:    aws.String("String"),
@@ -46,8 +47,10 @@ func Message(vehicle record.VehicleData) {
 				StringValue: aws.String(vehicle.Status),
 			},
 		},
-		MessageBody: aws.String("Program Car Utilization"),
-		QueueUrl:    &qURL,
+		MessageGroupId:         aws.String("group-A"),
+		MessageDeduplicationId: aws.String("group-A"),
+		MessageBody:            aws.String("Program Car Utilization"),
+		QueueUrl:               &qURL,
 	})
 
 	if err != nil {
@@ -57,5 +60,5 @@ func Message(vehicle record.VehicleData) {
 
 	fmt.Println("Success", *result)
 
-	defer receive.Message()
+	receive.Message()
 }

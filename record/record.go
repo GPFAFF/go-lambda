@@ -15,8 +15,8 @@ func CreateTerminatedVehicleEntry(line []string) VehicleData {
 		VIN:          line[1],
 		OrigDealerID: line[2],
 		ProgramCode:  line[5],
+		Date:         line[10],
 		Status:       "Terminated",
-		Date:         line[9],
 	}
 }
 
@@ -24,9 +24,9 @@ func CreateTerminatedVehicleEntry(line []string) VehicleData {
 func CreateActiveVehicleEntry(line []string) VehicleData {
 	return VehicleData{
 		VIN:          line[1],
-		OrigDealerID: line[2],
+		OrigDealerID: line[5],
 		ProgramCode:  line[8],
-		Status:       "Active",
 		Date:         line[9],
+		Status:       "Active",
 	}
 }
